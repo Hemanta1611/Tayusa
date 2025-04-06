@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const { body } = require('express-validator');
 const multer = require('multer');
 const { 
@@ -36,7 +37,7 @@ const router = express.Router();
 // Set up multer for file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, '../shared/uploads/');
+    cb(null, path.join(__dirname, '../../shared/uploads/'));
   },
   filename: function (req, file, cb) {
     cb(null, `${Date.now()}-${file.originalname}`);
