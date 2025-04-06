@@ -1,0 +1,42 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.app__body {
+  display: flex;
+  height: calc(100vh - 60px);
+}
+
+.app__content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: #f9f9f9;
+}
+
+/* Dark mode variables */
+:root {
+  --primary-bg: #ffffff;
+  --secondary-bg: #f9f9f9;
+  --primary-text: #030303;
+  --secondary-text: #606060;
+  --divider: #e0e0e0;
+  --primary-button: #065fd4;
+  --primary-button-text: #ffffff;
+  --hover-bg: #f2f2f2;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .app__body {
+    flex-direction: column;
+  }
+}

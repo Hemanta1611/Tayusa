@@ -1,0 +1,153 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  padding: 0 20px;
+  background-color: white;
+  border-bottom: 1px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar__left {
+  display: flex;
+  align-items: center;
+}
+
+.navbar__logo {
+  text-decoration: none;
+  color: #000;
+  display: flex;
+  align-items: center;
+}
+
+.navbar__logo h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ff0000;
+  margin-left: 5px;
+}
+
+.navbar__center {
+  flex: 0.6;
+}
+
+.navbar__searchContainer {
+  display: flex;
+  align-items: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.navbar__searchInput {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 20px 0 0 20px;
+  padding: 10px 15px;
+  outline: none;
+  height: 40px;
+}
+
+.navbar__searchButton {
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  border-left: none;
+  border-radius: 0 20px 20px 0;
+  padding: 0 20px;
+  height: 40px;
+  cursor: pointer;
+}
+
+.navbar__searchButton:hover {
+  background-color: #f0f0f0;
+}
+
+.navbar__right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navbar__icon {
+  color: #606060;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.navbar__icon:hover {
+  color: #000;
+}
+
+.navbar__profile {
+  position: relative;
+  cursor: pointer;
+}
+
+.navbar__profileMenu {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  padding: 10px 0;
+  width: 150px;
+  display: none;
+}
+
+.navbar__profile:hover .navbar__profileMenu {
+  display: block;
+}
+
+.navbar__profileMenu a, .navbar__profileMenu button {
+  display: block;
+  padding: 10px 15px;
+  text-decoration: none;
+  color: #606060;
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: 14px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.navbar__profileMenu a:hover, .navbar__profileMenu button:hover {
+  background-color: #f2f2f2;
+}
+
+.navbar__auth {
+  display: flex;
+  gap: 10px;
+}
+
+.navbar__login, .navbar__register {
+  text-decoration: none;
+  padding: 8px 15px;
+  border-radius: 18px;
+  font-size: 14px;
+}
+
+.navbar__login {
+  color: #065fd4;
+  background-color: transparent;
+  border: 1px solid #065fd4;
+}
+
+.navbar__register {
+  color: white;
+  background-color: #065fd4;
+  border: 1px solid #065fd4;
+}
+
+@media (max-width: 768px) {
+  .navbar__center {
+    display: none;
+  }
+  
+  .navbar__right {
+    gap: 15px;
+  }
+}

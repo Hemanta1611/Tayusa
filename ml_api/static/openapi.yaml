@@ -1,0 +1,483 @@
+openapi: 3.0.3
+info:
+  title: Tayusa ML API
+  description: |
+    # Tayusa Machine Learning API
+    
+    This API provides machine learning capabilities for the Tayusa tech content platform, including:
+    
+    - Content classification to verify if content is tech-related
+    - Video and article analysis
+    - User interaction tracking for building personalized recommendations
+    - Content recommendation generation
+    
+    All endpoints return JSON responses with appropriate HTTP status codes.
+  version: 1.0.0
+  
+servers:
+  - url: http://localhost:8000/api/ml
+    description: Development server
+  - url: https://api.tayusa.com/ml
+    description: Production server
+
+tags:
+  - name: Classification
+    description: Classify text into tech categories
+  - name: Content Analysis
+    description: Analyze video and article content
+  - name: User Interactions
+    description: Process user interactions with content
+  - name: Recommendations
+    description: Generate personalized content recommendations
+  - name: Categories
+    description: Retrieve available tech categories
+
+paths:
+  /classify:
+    post:
+      summary: Classify text content into tech categories
+      description: |
+        Takes text content and returns classification scores for different tech categories.
+        Returns a dictionary of category -> confidence score.
+      operationId: classifyText
+      tags:
+        - Classification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TextAnalysisRequest'
+      responses:
+        '200':
+          description: Successful classification
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: number
+                  format: float
+                  description: Confidence score for the category
+                example:
+                  "python": 0.92
+                  "web_development": 0.78
+                  "data_science": 0.45
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+  /analyze/video:
+    post:
+      summary: Analyze a video to determine its tech categories
+      description: |
+        Analyzes a video's metadata and transcript to determine if it's tech-related content.
+        Uses title, description, and transcript for classification.
+      operationId: analyzeVideo
+      tags:
+        - Content Analysis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VideoAnalysisRequest'
+      responses:
+        '200':
+          description: Successful analysis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentAnalysisResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+  /analyze/article:
+    post:
+      summary: Analyze an article to determine its tech categories
+      description: |
+        Analyzes an article's title and content to determine if it's tech-related.
+      operationId: analyzeArticle
+      tags:
+        - Content Analysis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArticleAnalysisRequest'
+      responses:
+        '200':
+          description: Successful analysis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentAnalysisResponse'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+  /user/interaction:
+    post:
+      summary: Process a user interaction with content
+      description: |
+        Records a user's interaction with content (view, like, etc.) and updates their profile for recommendations.
+      operationId: processUserInteraction
+      tags:
+        - User Interactions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInteractionRequest'
+      responses:
+        '200':
+          description: Interaction processed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Updated user profile for user123"
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+  /recommend:
+    post:
+      summary: Get content recommendations for a user
+      description: |
+        Returns personalized content recommendations for a specific user.
+        If content_pool is provided, recommendations are filtered from that pool.
+      operationId: getRecommendations
+      tags:
+        - Recommendations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecommendationRequest'
+      responses:
+        '200':
+          description: Recommendations generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                    example: "user123"
+                  recommendations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ContentItem'
+                  status:
+                    type: string
+                    example: "success"
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+                
+  /categories:
+    get:
+      summary: Get available tech categories
+      description: |
+        Returns the list of all tech categories the system can classify.
+      operationId: getCategories
+      tags:
+        - Categories
+      responses:
+        '200':
+          description: Categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      type: string
+                    example: ["python", "javascript", "web_development", "data_science"]
+                  count:
+                    type: integer
+                    example: 4
+                  status:
+                    type: string
+                    example: "success"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    TextAnalysisRequest:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          description: The text content to classify
+          example: "This tutorial explains how to use React hooks with TypeScript"
+        threshold:
+          type: number
+          format: float
+          description: Minimum confidence threshold for categories
+          default: 0.5
+          example: 0.5
+        top_k:
+          type: integer
+          description: Maximum number of categories to return
+          default: 5
+          example: 3
+          
+    VideoAnalysisRequest:
+      type: object
+      required:
+        - video_id
+      properties:
+        video_id:
+          type: string
+          description: Unique identifier for the video
+          example: "vid123"
+        title:
+          type: string
+          description: Title of the video
+          example: "Introduction to Python Programming"
+        description:
+          type: string
+          description: Description of the video
+          example: "Learn the basics of Python programming language"
+        transcript:
+          type: string
+          description: Transcript of the video content
+          example: "In this tutorial, we'll cover Python basics..."
+        threshold:
+          type: number
+          format: float
+          description: Minimum confidence threshold for categories
+          default: 0.5
+          example: 0.5
+          
+    ArticleAnalysisRequest:
+      type: object
+      required:
+        - title
+        - content
+      properties:
+        title:
+          type: string
+          description: Title of the article
+          example: "Advanced React Hooks"
+        content:
+          type: string
+          description: Content of the article
+          example: "React Hooks were introduced in React 16.8..."
+        threshold:
+          type: number
+          format: float
+          description: Minimum confidence threshold for categories
+          default: 0.5
+          example: 0.5
+          
+    UserInteractionRequest:
+      type: object
+      required:
+        - user_id
+        - content_id
+        - content_type
+        - interaction_type
+      properties:
+        user_id:
+          type: string
+          description: ID of the user
+          example: "user123"
+        content_id:
+          type: string
+          description: ID of the content
+          example: "vid456"
+        content_type:
+          type: string
+          description: Type of content (video, article, short)
+          enum: [video, article, short]
+          example: "video"
+        title:
+          type: string
+          description: Title of the content
+          example: "Introduction to GraphQL"
+        description:
+          type: string
+          description: Description of the content
+          example: "Learn the basics of GraphQL API development"
+        text:
+          type: string
+          description: Text content (for articles)
+          example: "GraphQL is a query language for your API..."
+        interaction_type:
+          type: string
+          description: Type of interaction (view, like, comment, share, save, dislike)
+          enum: [view, like, comment, share, save, dislike]
+          example: "like"
+          
+    RecommendationRequest:
+      type: object
+      required:
+        - user_id
+      properties:
+        user_id:
+          type: string
+          description: ID of the user to generate recommendations for
+          example: "user123"
+        count:
+          type: integer
+          description: Number of recommendations to return
+          default: 10
+          example: 5
+        content_pool:
+          type: array
+          description: Optional pool of content to select from
+          items:
+            $ref: '#/components/schemas/ContentItem'
+            
+    ContentItem:
+      type: object
+      required:
+        - id
+        - type
+        - title
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the content
+          example: "vid123"
+        type:
+          type: string
+          description: Type of content
+          enum: [video, article, short]
+          example: "video"
+        title:
+          type: string
+          description: Title of the content
+          example: "Introduction to Python Programming"
+        description:
+          type: string
+          description: Description of the content
+          example: "Learn the basics of Python programming language"
+        categories:
+          type: array
+          description: Tech categories associated with this content
+          items:
+            type: string
+          example: ["python", "programming"]
+        creator_id:
+          type: string
+          description: ID of the content creator
+          example: "user456"
+        thumbnail_url:
+          type: string
+          description: URL to the content thumbnail
+          example: "https://example.com/thumbnails/vid123.jpg"
+        url:
+          type: string
+          description: URL to the content
+          example: "https://example.com/videos/vid123"
+            
+    ContentAnalysisResponse:
+      type: object
+      properties:
+        categories:
+          type: object
+          additionalProperties:
+            type: number
+            format: float
+          description: Map of category to confidence score
+          example:
+            "python": 0.92
+            "programming": 0.85
+        primary_category:
+          type: string
+          description: The category with the highest confidence
+          example: "python"
+        confidence:
+          type: number
+          format: float
+          description: Confidence score for the primary category
+          example: 0.92
+        is_tech_content:
+          type: boolean
+          description: Whether the content is tech-related
+          example: true
+        status:
+          type: string
+          description: Status of the analysis
+          example: "success"
+          
+    Error:
+      type: object
+      properties:
+        detail:
+          type: string
+          description: Error message
+          example: "Classification error: Invalid input"
+        status_code:
+          type: integer
+          description: HTTP status code
+          example: 400
