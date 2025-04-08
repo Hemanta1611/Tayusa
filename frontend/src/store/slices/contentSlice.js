@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { isTechRelated } from '../../utils/techValidation';
+import { searchYouTube } from '../../utils/youtubeService';
 
 // Get all videos
 export const getVideos = createAsyncThunk(
@@ -67,12 +69,69 @@ export const getArticles = createAsyncThunk(
 // Search content
 export const searchContent = createAsyncThunk(
   'content/searchContent',
-  async (query, { rejectWithValue }) => {
+  async (query, { rejectWithValue, dispatch }) => {
     try {
+      // First check if the query is tech-related
+      if (!isTechRelated(query)) {
+        return {
+          data: [],
+          isNonTech: true,
+          message: 'Non-tech content is not available on this platform.'
+        };
+      }
+      
+      // Search local database first
       const response = await axios.get(`/api/content/search?q=${encodeURIComponent(query)}`);
+      
+      // If no results found in local database, search YouTube instead of dispatching
+      if (response.data.data.length === 0) {
+        try {
+          const youtubeResults = await searchYouTube(query);
+          return {
+            data: youtubeResults,
+            source: 'youtube'
+          };
+        } catch (youtubeError) {
+          console.error('YouTube search error:', youtubeError);
+          // Return empty results if YouTube search fails
+          return response.data;
+        }
+      }
+      
       return response.data;
     } catch (error) {
+      console.error('Search error:', error);
       const message = error.response?.data?.message || error.message;
+      
+      // If there's an error with local search, try YouTube directly
+      try {
+        const youtubeResults = await searchYouTube(query);
+        return {
+          data: youtubeResults,
+          source: 'youtube'
+        };
+      } catch (youtubeError) {
+        console.error('YouTube fallback search error:', youtubeError);
+        return rejectWithValue(message);
+      }
+    }
+  }
+);
+
+// Search YouTube content
+export const searchYouTubeContent = createAsyncThunk(
+  'content/searchYouTubeContent',
+  async (query, { rejectWithValue }) => {
+    try {
+      // Use the real YouTube API service
+      const youtubeResults = await searchYouTube(query);
+      
+      return {
+        data: youtubeResults,
+        source: 'youtube'
+      };
+    } catch (error) {
+      const message = error.message || 'Failed to fetch YouTube results';
       return rejectWithValue(message);
     }
   }
@@ -252,6 +311,20 @@ const contentSlice = createSlice({
         state.searchResults = action.payload.data;
       })
       .addCase(searchContent.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      
+      // Search YouTube content
+      .addCase(searchYouTubeContent.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(searchYouTubeContent.fulfilled, (state, action) => {
+        state.loading = false;
+        state.searchResults = action.payload.data;
+      })
+      .addCase(searchYouTubeContent.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

@@ -2,46 +2,32 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { 
-  FaHome, 
-  FaVideo,
   FaNewspaper, 
+  FaVideo,
+  FaPlayCircle, 
   FaUpload, 
-  FaUser, 
-  FaBookmark, 
-  FaHistory,
-  FaPlayCircle
+  FaBookmark,
+  FaUser
 } from 'react-icons/fa';
-import { MdSubscriptions } from 'react-icons/md';
 
 function Sidebar() {
   const location = useLocation();
   const { sidebarOpen } = useSelector(state => state.ui);
-  const { isAuthenticated } = useSelector(state => state.auth);
 
   const isActive = (path) => {
-    return location.pathname === path;
+    return location.pathname === path || 
+           (path === '/articles' && location.pathname.includes('/articles'));
   };
 
-  // Common navigation items for all users
-  const commonNavItems = [
-    { path: '/', icon: <FaHome />, text: 'Home' },
+  // Navigation items
+  const navItems = [
+    { path: '/articles', icon: <FaNewspaper />, text: 'Article Space' },
     { path: '/shorts', icon: <FaVideo />, text: 'Shorts' },
-    { path: '/subscriptions', icon: <MdSubscriptions />, text: 'Subscriptions' }
+    { path: '/videos', icon: <FaPlayCircle />, text: 'Videos' },
+    { path: '/upload', icon: <FaUpload />, text: 'Upload' },
+    { path: '/saved', icon: <FaBookmark />, text: 'Saved Content' },
+    { path: '/profile', icon: <FaUser />, text: 'Profile', divider: true }
   ];
-  
-  // Navigation items only for authenticated users
-  const authNavItems = [
-    { path: '/your-videos', icon: <FaPlayCircle />, text: 'Your Videos' },
-    { path: '/history', icon: <FaHistory />, text: 'History' },
-    { path: '/saved', icon: <FaBookmark />, text: 'Saved' },
-    { path: '/upload', icon: <FaUpload />, text: 'Upload', divider: true },
-    { path: '/profile', icon: <FaUser />, text: 'Your Channel' }
-  ];
-
-  // Combine nav items based on authentication status
-  const navItems = isAuthenticated 
-    ? [...commonNavItems, ...authNavItems]
-    : commonNavItems;
 
   return (
     <div className={`bg-white h-full w-64 border-r border-gray-200 flex-shrink-0 fixed left-0 top-14 bottom-0 overflow-y-auto ${sidebarOpen ? 'block' : 'hidden md:block'}`}>

@@ -46,76 +46,52 @@ function FollowingContent() {
           setFollowedCreators(mockFollowedCreators);
           
           setFollowingContent({
-            videos: [
+            videos: [],
+            shorts: [],
+            articles: [
               {
                 _id: 'follow1',
-                title: 'Advanced React Patterns for Enterprise Applications',
-                thumbnailUrl: 'https://i.ytimg.com/vi/YaZg8wg39QQ/maxresdefault.jpg',
+                title: 'Understanding React Server Components: A Comprehensive Guide',
+                thumbnailUrl: 'https://res.cloudinary.com/practicaldev/image/fetch/s--5MR_dfRK--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/dm6lh9po3ochw1qwm7xa.jpg',
+                excerpt: 'Learn how React Server Components work and when to use them in your applications for better performance.',
                 user: { _id: 'creator1', username: 'ReactMaster', profilePicture: '' },
                 views: 7832,
                 createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-                duration: 1520
+                readTime: '11 min read',
+                tags: ['React', 'Server Components', 'Web Development']
               },
               {
                 _id: 'follow2',
-                title: 'CSS Grid vs Flexbox: When to Use Each',
-                thumbnailUrl: 'https://i.ytimg.com/vi/3elGSZSWTbM/maxresdefault.jpg',
+                title: 'Advanced CSS Layout Techniques That Will Blow Your Mind',
+                thumbnailUrl: 'https://res.cloudinary.com/practicaldev/image/fetch/s--C1a3Quvx--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/rh7cgl0pu15rgotprclo.png',
+                excerpt: 'Discover lesser-known CSS layout techniques that can revolutionize your web designs.',
                 user: { _id: 'creator2', username: 'CSSWizard', profilePicture: '' },
                 views: 5421,
                 createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-                duration: 896
+                readTime: '8 min read',
+                tags: ['CSS', 'Web Design', 'Frontend']
               },
               {
                 _id: 'follow3',
-                title: 'JavaScript Closures Explained Once and For All',
-                thumbnailUrl: 'https://i.ytimg.com/vi/vKJpN5FAeF4/maxresdefault.jpg',
+                title: 'JavaScript Design Patterns Every Developer Should Master',
+                thumbnailUrl: 'https://res.cloudinary.com/practicaldev/image/fetch/s--AO0dFdQ5--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/jgmpju0lemx5kk3jjdnw.jpg',
+                excerpt: 'A deep dive into essential JavaScript design patterns that will make your code more maintainable and scalable.',
                 user: { _id: 'creator3', username: 'JSNinja', profilePicture: '' },
                 views: 9211,
                 createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-                duration: 743
+                readTime: '14 min read',
+                tags: ['JavaScript', 'Design Patterns', 'Software Architecture']
               },
               {
                 _id: 'follow4',
-                title: 'Building AI Models with Python and TensorFlow',
-                thumbnailUrl: 'https://i.ytimg.com/vi/tPYj3fFJGjk/maxresdefault.jpg',
+                title: 'Building Production-Ready ML Models with Python and TensorFlow',
+                thumbnailUrl: 'https://miro.medium.com/v2/resize:fit:1400/1*c_fiB-YgbnMl6nntYGBMHQ.jpeg',
+                excerpt: 'A comprehensive guide to developing and deploying machine learning models that are ready for production environments.',
                 user: { _id: 'creator4', username: 'PythonGuru', profilePicture: '' },
                 views: 12456,
                 createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-                duration: 1632
-              }
-            ],
-            shorts: [
-              {
-                _id: 'followShort1',
-                title: 'CSS Grid in 30 Seconds',
-                thumbnailUrl: 'https://i.ytimg.com/vi/EiNiSFIPIQE/maxresdefault.jpg',
-                user: { _id: 'creator2', username: 'CSSWizard', profilePicture: '' },
-                likes: ['user1', 'user2', 'user3'],
-                comments: [{ _id: 'c1' }, { _id: 'c2' }],
-                createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-              },
-              {
-                _id: 'followShort2',
-                title: 'JavaScript Prototypes Made Simple',
-                thumbnailUrl: 'https://i.ytimg.com/vi/1UTqFAorQY8/maxresdefault.jpg',
-                user: { _id: 'creator3', username: 'JSNinja', profilePicture: '' },
-                likes: ['user3', 'user4'],
-                comments: [{ _id: 'c3' }],
-                createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
-              }
-            ],
-            articles: [
-              {
-                _id: 'followArticle1',
-                title: 'Building Scalable React Applications with Redux Toolkit',
-                content: 'Redux Toolkit simplifies Redux development by providing utilities to reduce boilerplate code...',
-                coverImageUrl: 'https://miro.medium.com/max/1400/1*-ojFAc3Y2T1stcyK0yVm8g.png',
-                user: { _id: 'creator1', username: 'ReactMaster', profilePicture: '' },
-                views: 3245,
-                likes: ['user1', 'user2'],
-                createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-                readTime: 8,
-                techTags: ['react', 'redux', 'javascript']
+                readTime: '18 min read',
+                tags: ['Python', 'Machine Learning', 'TensorFlow', 'AI']
               }
             ]
           });
@@ -229,34 +205,10 @@ function FollowingContent() {
         </div>
       )}
       
-      {/* Latest videos from followed creators */}
-      {followingContent.videos.length > 0 && (
-        <div className="mb-10">
-          <h2 className="text-xl font-bold mb-4">Latest from Creators You Follow</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {followingContent.videos.map(video => (
-              <VideoCard key={video._id} video={video} />
-            ))}
-          </div>
-        </div>
-      )}
-      
-      {/* Latest shorts from followed creators */}
-      {followingContent.shorts.length > 0 && (
-        <div className="mb-10">
-          <h2 className="text-xl font-bold mb-4">Latest Shorts</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {followingContent.shorts.map(short => (
-              <ShortVideoCard key={short._id} video={short} />
-            ))}
-          </div>
-        </div>
-      )}
-      
       {/* Latest articles from followed creators */}
       {followingContent.articles.length > 0 && (
         <div className="mb-10">
-          <h2 className="text-xl font-bold mb-4">Latest Articles</h2>
+          <h2 className="text-xl font-bold mb-4">Latest Articles from Creators You Follow</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {followingContent.articles.map(article => (
               <ArticleCard key={article._id} article={article} />

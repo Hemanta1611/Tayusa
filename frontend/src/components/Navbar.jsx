@@ -1,22 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { FaSearch, FaUserCircle, FaBell, FaUpload, FaSignOutAlt, FaBars } from 'react-icons/fa';
+import { FaUserCircle, FaBell, FaUpload, FaSignOutAlt, FaBars } from 'react-icons/fa';
 import { logout } from '../store/slices/authSlice';
 import { toggleSidebar } from '../store/slices/uiSlice';
 
 function Navbar() {
-  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector(state => state.auth);
-  
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
-    }
-  };
 
   const handleLogout = () => {
     dispatch(logout());
@@ -37,23 +29,8 @@ function Navbar() {
         </Link>
       </div>
 
-      <div className="flex-1 max-w-2xl mx-4">
-        <form onSubmit={handleSearchSubmit} className="flex">
-          <input
-            type="text"
-            placeholder="Search tech content..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-l-full focus:outline-none focus:ring-1 focus:ring-primary"
-          />
-          <button 
-            type="submit" 
-            className="bg-gray-100 px-4 border border-l-0 border-gray-300 rounded-r-full hover:bg-gray-200"
-          >
-            <FaSearch className="text-gray-600" />
-          </button>
-        </form>
-      </div>
+      {/* Spacer to maintain layout */}
+      <div className="flex-1"></div>
 
       <div className="flex items-center gap-4">
         {isAuthenticated ? (

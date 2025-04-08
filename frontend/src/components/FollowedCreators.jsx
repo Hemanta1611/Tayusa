@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaCheckCircle } from 'react-icons/fa';
+import { FaPlus } from 'react-icons/fa';
 import LoadingSpinner from './LoadingSpinner';
 
-function FollowedCreators() {
+function FollowedCreators({ onUserSelect }) {
   const [creators, setCreators] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedCreator, setSelectedCreator] = useState(null);
 
   useEffect(() => {
     const fetchFollowedCreators = async () => {
@@ -24,57 +25,73 @@ function FollowedCreators() {
               _id: 'creator1', 
               username: 'ReactMaster', 
               profilePicture: '',
-              subscribers: 15432,
-              verified: true,
-              latestContent: { type: 'video', title: 'Advanced React Patterns', createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) }
+              color: '#6366f1'
             },
             { 
               _id: 'creator2', 
               username: 'CSSWizard', 
               profilePicture: '',
-              subscribers: 9870,
-              verified: true,
-              latestContent: { type: 'short', title: 'CSS Grid in 30 Seconds', createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) }
+              color: '#ec4899'
             },
             { 
               _id: 'creator3', 
               username: 'JSNinja', 
               profilePicture: '',
-              subscribers: 12345,
-              verified: false,
-              latestContent: { type: 'article', title: 'JavaScript Closures Demystified', createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000) }
+              color: '#f59e0b'
             },
             { 
               _id: 'creator4', 
               username: 'PythonGuru', 
               profilePicture: '',
-              subscribers: 18920,
-              verified: true,
-              latestContent: { type: 'video', title: 'Building AI Models with Python', createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) }
+              color: '#10b981'
             },
             { 
               _id: 'creator5', 
               username: 'DevOpsJourney', 
               profilePicture: '',
-              subscribers: 7654,
-              verified: false,
-              latestContent: { type: 'article', title: 'Docker Simplified', createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
+              color: '#3b82f6'
             },
             { 
               _id: 'creator6', 
               username: 'UXMaster', 
               profilePicture: '',
-              subscribers: 13420,
-              verified: true,
-              latestContent: { type: 'short', title: 'UX Design Principles', createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000) }
+              color: '#8b5cf6'
             },
             { 
               _id: 'creator7', 
               username: 'DataScientist', 
               profilePicture: '',
-              subscribers: 22540,
-              verified: true,
-              latestContent: { type: 'video', title: 'Data Visualization Techniques', createdAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000) }
+              color: '#ef4444'
+            },
+            { 
+              _id: 'creator8', 
+              username: 'AIExpert', 
+              profilePicture: '',
+              color: '#14b8a6'
+            },
+            { 
+              _id: 'creator9', 
+              username: 'CloudArch', 
+              profilePicture: '',
+              color: '#f97316'
+            },
+            { 
+              _id: 'creator10', 
+              username: 'MobileDev', 
+              profilePicture: '',
+              color: '#8b5cf6'
+            },
+            { 
+              _id: 'creator11', 
+              username: 'WebSecurity', 
+              profilePicture: '',
+              color: '#06b6d4'
+            },
+            { 
+              _id: 'creator12', 
+              username: 'GameDev', 
+              profilePicture: '',
+              color: '#ec4899'
             }
           ];
           
@@ -91,43 +108,20 @@ function FollowedCreators() {
     
     fetchFollowedCreators();
   }, []);
-  
-  // Helper to format the time
-  const formatTimeAgo = (date) => {
-    const now = new Date();
-    const diffInSeconds = Math.floor((now - date) / 1000);
+
+  const handleCreatorClick = (creator) => {
+    const isSelected = selectedCreator === creator._id;
+    const newSelected = isSelected ? null : creator._id;
+    setSelectedCreator(newSelected);
     
-    if (diffInSeconds < 60) return 'just now';
-    
-    const diffInMinutes = Math.floor(diffInSeconds / 60);
-    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-    
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays}d ago`;
-    
-    return date.toLocaleDateString();
-  };
-  
-  // Helper to get content type icon
-  const getContentTypeIcon = (type) => {
-    switch (type) {
-      case 'video':
-        return <span className="text-red-500">🎬</span>;
-      case 'short':
-        return <span className="text-purple-500">📱</span>;
-      case 'article':
-        return <span className="text-blue-500">📝</span>;
-      default:
-        return null;
+    if (onUserSelect) {
+      onUserSelect(isSelected ? null : creator);
     }
   };
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-8">
+      <div className="flex justify-center items-center py-4">
         <LoadingSpinner />
       </div>
     );
@@ -135,7 +129,7 @@ function FollowedCreators() {
 
   if (error) {
     return (
-      <div className="text-center py-8 text-red-500">
+      <div className="text-center py-4 text-red-500">
         {error}
       </div>
     );
@@ -143,7 +137,7 @@ function FollowedCreators() {
 
   if (creators.length === 0) {
     return (
-      <div className="text-center py-10">
+      <div className="text-center py-6">
         <p className="text-gray-700 mb-4">
           You're not following any creators yet.
         </p>
@@ -158,54 +152,42 @@ function FollowedCreators() {
   }
 
   return (
-    <div className="py-4">
-      <h2 className="text-xl font-bold mb-4 px-4">Subscriptions</h2>
-      
-      <div className="overflow-x-auto overflow-y-hidden scrollbar-hide pb-2">
-        <div className="flex px-4 space-x-6">
-          {creators.map(creator => (
-            <div key={creator._id} className="flex-shrink-0 w-56">
-              <Link to={`/profile/${creator._id}`} className="block">
-                <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 flex flex-col">
-                  <div className="flex items-center p-4">
-                    <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 mr-3 flex-shrink-0">
-                      {creator.profilePicture ? (
-                        <img src={creator.profilePicture} alt={creator.username} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-primary text-white text-lg font-medium">
-                          {creator.username.charAt(0).toUpperCase()}
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center">
-                        <h3 className="font-medium text-gray-900 truncate mr-1">{creator.username}</h3>
-                        {creator.verified && <FaCheckCircle className="text-primary text-sm" />}
-                      </div>
-                      <p className="text-sm text-gray-500 truncate">{creator.subscribers.toLocaleString()} subscribers</p>
-                    </div>
-                  </div>
-                  
-                  {creator.latestContent && (
-                    <div className="px-4 pb-4">
-                      <p className="text-xs text-gray-500 mb-1">Latest {creator.latestContent.type}:</p>
-                      <div className="flex items-start">
-                        <div className="mr-2 mt-0.5">
-                          {getContentTypeIcon(creator.latestContent.type)}
-                        </div>
-                        <div>
-                          <p className="text-sm line-clamp-2 font-medium text-gray-800">{creator.latestContent.title}</p>
-                          <p className="text-xs text-gray-500">{formatTimeAgo(creator.latestContent.createdAt)}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+    <div className="overflow-x-auto py-2">
+      <div className="flex space-x-4 px-4">
+        {creators.map(creator => (
+          <button
+            key={creator._id}
+            onClick={() => handleCreatorClick(creator)}
+            className={`flex-shrink-0 focus:outline-none ${
+              selectedCreator === creator._id ? 'ring-2 ring-primary' : ''
+            }`}
+          >
+            <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center">
+              {creator.profilePicture ? (
+                <img 
+                  src={creator.profilePicture} 
+                  alt={creator.username} 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div 
+                  className="w-full h-full flex items-center justify-center text-white text-lg font-medium"
+                  style={{ backgroundColor: creator.color }}
+                >
+                  {creator.username.charAt(0).toUpperCase()}
                 </div>
-              </Link>
+              )}
             </div>
-          ))}
-        </div>
+          </button>
+        ))}
+        
+        {/* Add new creator button */}
+        <Link 
+          to="/discover" 
+          className="flex-shrink-0 w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+        >
+          <FaPlus className="text-gray-500" />
+        </Link>
       </div>
     </div>
   );

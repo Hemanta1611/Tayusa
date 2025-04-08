@@ -10,12 +10,19 @@ import {
   FaHeart,
   FaBookmark,
   FaEye,
-  FaLock
+  FaLock,
+  FaCommentAlt,
+  FaShare,
+  FaFileVideo,
+  FaTrash,
+  FaPencilAlt
 } from 'react-icons/fa';
 import LoadingSpinner from '../components/LoadingSpinner';
 import VideoCard from '../components/VideoCard';
 import ShortVideoCard from '../components/ShortVideoCard';
 import ArticleCard from '../components/ArticleCard';
+import MainHeader from '../components/MainHeader';
+import Sidebar from '../components/Sidebar';
 
 function Profile() {
   const { id } = useParams();
@@ -24,7 +31,7 @@ function Profile() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('videos');
+  const [activeTab, setActiveTab] = useState('articles');
   const [content, setContent] = useState({
     videos: [],
     shorts: [],
@@ -174,304 +181,255 @@ function Profile() {
     // });
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[calc(100vh-80px)]">
-        <LoadingSpinner />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container mx-auto px-4 py-8 text-center">
-        <p className="text-red-500 mb-4">{error}</p>
-        <button 
-          onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-primary text-white rounded-md"
-        >
-          Try Again
-        </button>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="container mx-auto px-4 py-8 text-center">
-        <p className="text-gray-700 mb-4">User not found</p>
-        <Link to="/" className="text-primary hover:underline">
-          Return to home
-        </Link>
-      </div>
-    );
-  }
-
   return (
-    <div className="bg-gray-50 min-h-screen">
-      {/* Cover photo and profile info */}
-      <div className="relative">
-        <div className="h-60 w-full overflow-hidden">
-          <img 
-            src={user.coverPhoto || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f'} 
-            alt="Cover" 
-            className="w-full h-full object-cover"
-          />
-        </div>
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Sidebar */}
+      <Sidebar />
+      
+      {/* Main content */}
+      <div className="flex-1 ml-20">
+        {/* Header */}
+        <MainHeader />
         
-        <div className="container mx-auto px-4">
-          <div className="relative -mt-20 flex flex-col md:flex-row items-start md:items-end">
-            <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-white bg-white z-10">
-              {user.profilePicture ? (
-                <img src={user.profilePicture} alt={user.username} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-primary text-white text-4xl font-medium">
-                  {user.username?.charAt(0).toUpperCase() || 'U'}
-                </div>
-              )}
+        {/* Main content area */}
+        <div className="pt-16 px-4 pb-12">
+          {loading ? (
+            <div className="flex justify-center items-center py-16">
+              <LoadingSpinner />
             </div>
-            
-            <div className="md:ml-6 mt-4 md:mt-0 mb-4 flex-1">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{user.name}</h1>
-              <p className="text-gray-600 mb-1">@{user.username}</p>
-              <p className="text-gray-700 mb-3">{user.bio}</p>
-              
-              <div className="flex flex-wrap items-center text-sm text-gray-600 mb-4 gap-x-4 gap-y-2">
-                {user.location && (
-                  <span className="flex items-center">
-                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"></path>
-                    </svg>
-                    {user.location}
-                  </span>
-                )}
-                {user.website && (
-                  <a 
-                    href={user.website} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center text-primary hover:underline"
-                  >
-                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"></path>
-                      <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"></path>
-                    </svg>
-                    {user.website.replace(/^https?:\/\/(www\.)?/, '')}
-                  </a>
-                )}
-                <span className="flex items-center">
-                  <FaClock className="mr-1" />
-                  Joined {new Date(user.joinedDate).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
-                </span>
-              </div>
-            </div>
-            
-            <div className="mt-4 md:mt-0">
-              {isOwnProfile ? (
-                <Link 
-                  to="/settings/profile" 
-                  className="flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full"
-                >
-                  <FaUserEdit className="mr-2" />
-                  Edit Profile
-                </Link>
-              ) : (
-                <button 
-                  onClick={handleFollow}
-                  className={`flex items-center px-4 py-2 rounded-full ${isFollowing ? 'bg-gray-100 hover:bg-gray-200 text-gray-800' : 'bg-primary hover:bg-blue-700 text-white'}`}
-                >
-                  {isFollowing ? 'Following' : 'Follow'}
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Stats */}
-      <div className="container mx-auto px-4 mt-6">
-        <div className="bg-white rounded-lg shadow-sm p-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center">
-            <div className="flex items-center justify-center text-primary mb-1">
-              <FaUsers className="mr-1" />
-              <span className="font-bold text-xl">{stats.followers}</span>
-            </div>
-            <p className="text-gray-600">Followers</p>
-          </div>
-          <div className="text-center">
-            <div className="flex items-center justify-center text-primary mb-1">
-              <FaUsers className="mr-1" />
-              <span className="font-bold text-xl">{stats.following}</span>
-            </div>
-            <p className="text-gray-600">Following</p>
-          </div>
-          <div className="text-center">
-            <div className="flex items-center justify-center text-primary mb-1">
-              <FaEye className="mr-1" />
-              <span className="font-bold text-xl">{stats.totalViews}</span>
-            </div>
-            <p className="text-gray-600">Total Views</p>
-          </div>
-          <div className="text-center">
-            <div className="flex items-center justify-center text-primary mb-1">
-              <FaHeart className="mr-1" />
-              <span className="font-bold text-xl">{stats.totalLikes}</span>
-            </div>
-            <p className="text-gray-600">Total Likes</p>
-          </div>
-        </div>
-      </div>
-      
-      {/* Content tabs */}
-      <div className="container mx-auto px-4 mt-6">
-        <div className="border-b border-gray-200">
-          <nav className="flex -mb-px space-x-8 overflow-x-auto">
-            <button
-              onClick={() => handleTabChange('videos')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'videos' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
-            >
-              <FaVideo className="inline mr-2" />
-              Videos
-            </button>
-            <button
-              onClick={() => handleTabChange('shorts')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'shorts' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
-            >
-              <FaVideo className="inline mr-2" />
-              Shorts
-            </button>
-            <button
-              onClick={() => handleTabChange('articles')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'articles' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
-            >
-              <FaNewspaper className="inline mr-2" />
-              Articles
-            </button>
-            {isOwnProfile && (
-              <button
-                onClick={() => handleTabChange('saved')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'saved' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}
+          ) : error ? (
+            <div className="text-center py-16">
+              <p className="text-red-500 mb-4">{error}</p>
+              <button 
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 bg-primary text-white rounded-md"
               >
-                <FaBookmark className="inline mr-2" />
-                Saved
+                Try Again
               </button>
-            )}
-          </nav>
+            </div>
+          ) : (
+            <>
+              {/* Profile Header Section */}
+              <div className="max-w-5xl mx-auto">
+                <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-6">
+                  {/* Cover Photo */}
+                  <div className="h-40 bg-gradient-to-r from-blue-500 to-purple-600 relative">
+                    {user.coverPhoto && (
+                      <img 
+                        src={user.coverPhoto} 
+                        alt="Cover" 
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                  </div>
+                  
+                  <div className="px-6 py-6 flex flex-col md:flex-row">
+                    {/* Profile Picture */}
+                    <div className="flex flex-col items-center md:items-start">
+                      <div className="w-24 h-24 rounded-full bg-primary text-white flex items-center justify-center text-2xl font-bold -mt-16 border-4 border-white shadow-sm">
+                        {user.profilePicture ? (
+                          <img 
+                            src={user.profilePicture} 
+                            alt={user.username} 
+                            className="w-full h-full object-cover rounded-full"
+                          />
+                        ) : (
+                          user.username.charAt(0).toUpperCase()
+                        )}
+                      </div>
+                      
+                      <div className="mt-4 text-center md:text-left">
+                        <h1 className="text-2xl font-bold text-gray-900">{user.name || user.username}</h1>
+                        <p className="text-gray-500">@{user.username}</p>
+                      </div>
+                      
+                      {isOwnProfile ? (
+                        <div className="ml-auto">
+                          <Link
+                            to="/profile/edit"
+                            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                          >
+                            <FaUserEdit className="-ml-1 mr-2 h-4 w-4 text-gray-500" />
+                            Edit Profile
+                          </Link>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={handleFollow}
+                          className={`mt-4 inline-flex items-center px-4 py-2 border rounded-md shadow-sm text-sm font-medium ${
+                            isFollowing 
+                              ? 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50' 
+                              : 'border-transparent text-white bg-primary hover:bg-blue-700'
+                          }`}
+                        >
+                          <FaUsers className="mr-2" />
+                          {isFollowing ? 'Unfollow' : 'Follow'}
+                        </button>
+                      )}
+                    </div>
+                    
+                    <div className="mt-6 md:mt-0 md:ml-8 flex-1">
+                      {/* Bio/Tagline */}
+                      <p className="text-gray-700 mb-4">{user.bio}</p>
+                      
+                      {/* Stats */}
+                      <div className="flex flex-wrap justify-center md:justify-start space-x-6 text-sm">
+                        <div className="text-center">
+                          <p className="font-semibold text-gray-900">{stats.followers}</p>
+                          <p className="text-gray-500">Followers</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="font-semibold text-gray-900">{stats.following}</p>
+                          <p className="text-gray-500">Following</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="font-semibold text-gray-900">
+                            {content.videos.length + content.shorts.length + content.articles.length}
+                          </p>
+                          <p className="text-gray-500">Total Posts</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="font-semibold text-gray-900">{stats.totalViews.toLocaleString()}</p>
+                          <p className="text-gray-500">Views</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Tabs */}
+                <div className="border-b border-gray-200 mb-6">
+                  <div className="flex">
+                    <button
+                      onClick={() => handleTabChange('articles')}
+                      className={`py-3 px-4 text-sm font-medium border-b-2 ${
+                        activeTab === 'articles'
+                          ? 'text-primary border-primary'
+                          : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      <span className="flex items-center">
+                        <FaNewspaper className="mr-2" />
+                        Articles
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => handleTabChange('shorts')}
+                      className={`py-3 px-4 text-sm font-medium border-b-2 ${
+                        activeTab === 'shorts'
+                          ? 'text-primary border-primary'
+                          : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      <span className="flex items-center">
+                        <FaFileVideo className="mr-2" />
+                        Short Videos
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => handleTabChange('videos')}
+                      className={`py-3 px-4 text-sm font-medium border-b-2 ${
+                        activeTab === 'videos'
+                          ? 'text-primary border-primary'
+                          : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      <span className="flex items-center">
+                        <FaVideo className="mr-2" />
+                        Videos
+                      </span>
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Content */}
+                {activeTab === 'articles' && (
+                  content.articles.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {content.articles.map(article => (
+                        <ArticleCard key={article._id} article={article} />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <FaNewspaper className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No articles yet</h3>
+                      {isOwnProfile && (
+                        <p className="text-gray-600 mb-4">
+                          Share your insights and knowledge with in-depth articles.
+                        </p>
+                      )}
+                      {isOwnProfile && (
+                        <Link
+                          to="/upload?type=article"
+                          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-blue-700"
+                        >
+                          Write Article
+                        </Link>
+                      )}
+                    </div>
+                  )
+                )}
+                
+                {activeTab === 'shorts' && (
+                  content.shorts.length > 0 ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                      {content.shorts.map(short => (
+                        <ShortVideoCard key={short._id} video={short} />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <FaVideo className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No shorts yet</h3>
+                      {isOwnProfile && (
+                        <p className="text-gray-600 mb-4">
+                          Create bite-sized content to share quick tips and insights.
+                        </p>
+                      )}
+                      {isOwnProfile && (
+                        <Link
+                          to="/upload?type=short"
+                          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-blue-700"
+                        >
+                          Create Short
+                        </Link>
+                      )}
+                    </div>
+                  )
+                )}
+                
+                {activeTab === 'videos' && (
+                  content.videos.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {content.videos.map(video => (
+                        <VideoCard key={video._id} video={video} />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <FaVideo className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No videos yet</h3>
+                      {isOwnProfile && (
+                        <p className="text-gray-600 mb-4">
+                          Share your knowledge with the community by uploading your first video.
+                        </p>
+                      )}
+                      {isOwnProfile && (
+                        <Link
+                          to="/upload"
+                          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-blue-700"
+                        >
+                          Upload Video
+                        </Link>
+                      )}
+                    </div>
+                  )
+                )}
+              </div>
+            </> 
+          )}
         </div>
-      </div>
-      
-      {/* Content */}
-      <div className="container mx-auto px-4 py-6">
-        {activeTab === 'videos' && (
-          content.videos.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {content.videos.map(video => (
-                <VideoCard key={video._id} video={video} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <FaVideo className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No videos yet</h3>
-              {isOwnProfile && (
-                <p className="text-gray-600 mb-4">
-                  Share your knowledge with the community by uploading your first video.
-                </p>
-              )}
-              {isOwnProfile && (
-                <Link
-                  to="/upload"
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-blue-700"
-                >
-                  Upload Video
-                </Link>
-              )}
-            </div>
-          )
-        )}
-        
-        {activeTab === 'shorts' && (
-          content.shorts.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {content.shorts.map(short => (
-                <ShortVideoCard key={short._id} video={short} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <FaVideo className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No shorts yet</h3>
-              {isOwnProfile && (
-                <p className="text-gray-600 mb-4">
-                  Create bite-sized content to share quick tips and insights.
-                </p>
-              )}
-              {isOwnProfile && (
-                <Link
-                  to="/upload?type=short"
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-blue-700"
-                >
-                  Create Short
-                </Link>
-              )}
-            </div>
-          )
-        )}
-        
-        {activeTab === 'articles' && (
-          content.articles.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {content.articles.map(article => (
-                <ArticleCard key={article._id} article={article} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <FaNewspaper className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No articles yet</h3>
-              {isOwnProfile && (
-                <p className="text-gray-600 mb-4">
-                  Share your insights and knowledge with in-depth articles.
-                </p>
-              )}
-              {isOwnProfile && (
-                <Link
-                  to="/upload?type=article"
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-blue-700"
-                >
-                  Write Article
-                </Link>
-              )}
-            </div>
-          )
-        )}
-        
-        {activeTab === 'saved' && (
-          isOwnProfile ? (
-            content.savedContent.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Render saved content here */}
-                <p>Saved content will be shown here</p>
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <FaBookmark className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No saved content</h3>
-                <p className="text-gray-600">
-                  Content you save will appear here for easy access.
-                </p>
-              </div>
-            )
-          ) : (
-            <div className="text-center py-12">
-              <FaLock className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">This content is private</h3>
-              <p className="text-gray-600">
-                Only the owner can view their saved content.
-              </p>
-            </div>
-          )
-        )}
       </div>
     </div>
   );

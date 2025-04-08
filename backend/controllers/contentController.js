@@ -36,21 +36,27 @@ exports.uploadVideo = async (req, res) => {
     // Verify if content is tech-related using ML API
     let verificationResult;
     try {
-      const formData = new FormData();
-      formData.append('file', fs.createReadStream(videoFile.path));
-      formData.append('title', title);
-      formData.append('description', description);
-
-      const response = await axios.post(`${ML_API_URL}/api/ml/analyze/video`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+      // Format the request according to the API requirements
+      const response = await axios.post(`${ML_API_URL}/predict_tech/`, {
+        title: title,
+        description: description
       });
 
-      verificationResult = response.data;
+      console.log('ML API Response:', response.data);
+      
+      // Map the API response to our internal format
+      const isTechRelated = response.data.result === 'Technical-related';
+      
+      verificationResult = {
+        is_tech_related: isTechRelated,
+        confidence: isTechRelated ? 0.8 : 0.2,
+        passes_threshold: isTechRelated
+      };
     } catch (error) {
-      console.error('ML API verification error:', error);
-      // If ML API fails, set verification status to pending
+      console.error('ML API verification error:', error.message);
+      if (error.response) {
+        console.error('Error details:', error.response.status, error.response.data);
+      }
       verificationResult = {
         is_tech_related: false,
         confidence: 0,
@@ -107,23 +113,30 @@ exports.uploadShortVideo = async (req, res) => {
     const videoFile = req.files.video[0];
     const thumbnailFile = req.files.thumbnail[0];
 
-    // Verify if content is tech-related using ML API (similar to uploadVideo)
+    // Verify if content is tech-related using ML API
     let verificationResult;
     try {
-      const formData = new FormData();
-      formData.append('file', fs.createReadStream(videoFile.path));
-      formData.append('title', title);
-      formData.append('description', description);
-
-      const response = await axios.post(`${ML_API_URL}/api/ml/analyze/video`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+      // Format the request according to the API requirements
+      const response = await axios.post(`${ML_API_URL}/predict_tech/`, {
+        title: title,
+        description: description
       });
 
-      verificationResult = response.data;
+      console.log('ML API Response:', response.data);
+      
+      // Map the API response to our internal format
+      const isTechRelated = response.data.result === 'Technical-related';
+      
+      verificationResult = {
+        is_tech_related: isTechRelated,
+        confidence: isTechRelated ? 0.8 : 0.2,
+        passes_threshold: isTechRelated
+      };
     } catch (error) {
-      console.error('ML API verification error:', error);
+      console.error('ML API verification error:', error.message);
+      if (error.response) {
+        console.error('Error details:', error.response.status, error.response.data);
+      }
       verificationResult = {
         is_tech_related: false,
         confidence: 0,
@@ -177,18 +190,51 @@ exports.uploadArticle = async (req, res) => {
     // Verify if content is tech-related using ML API
     let verificationResult;
     try {
-      const response = await axios.post(`${ML_API_URL}/api/ml/analyze/article`, {
-        title,
-        content
+      // Format the request according to the API requirements
+      const response = await axios.post(`${ML_API_URL}/predict_tech/`, {
+        title: title,
+        description: content
       });
 
-      verificationResult = response.data;
+      console.log('ML API Response:', response.data);
+      
+      // Map the API response to our internal format
+      const isTechRelated = response.data.result === 'Technical-related';
+      
+      verificationResult = {
+        is_tech_related: isTechRelated,
+        confidence: isTechRelated ? 0.8 : 0.2,
+        passes_threshold: isTechRelated
+      };
+
+      // If content is tech-related, get domain classification
+      if (isTechRelated) {
+        try {
+          const domainResponse = await axios.post(`${ML_API_URL}/predict_domain/`, {
+            title: title,
+            description: content
+          });
+          
+          console.log('Domain Classification Response:', domainResponse.data);
+          
+          // Add domain information to verification result
+          verificationResult.domain = domainResponse.data.domain;
+        } catch (domainError) {
+          console.error('Domain classification error:', domainError.message);
+          // Default domain if classification fails
+          verificationResult.domain = 'Uncategorized';
+        }
+      }
     } catch (error) {
-      console.error('ML API verification error:', error);
+      console.error('ML API verification error:', error.message);
+      if (error.response) {
+        console.error('Error details:', error.response.status, error.response.data);
+      }
       verificationResult = {
         is_tech_related: false,
         confidence: 0,
-        passes_threshold: false
+        passes_threshold: false,
+        domain: 'Uncategorized'
       };
     }
 
@@ -201,7 +247,8 @@ exports.uploadArticle = async (req, res) => {
       readTime,
       techTags: Array.isArray(techTags) ? techTags : [techTags],
       verified: verificationResult.passes_threshold,
-      verificationStatus: verificationResult.passes_threshold ? 'approved' : 'pending'
+      verificationStatus: verificationResult.passes_threshold ? 'approved' : 'pending',
+      domain: verificationResult.domain || 'Uncategorized'
     });
 
     res.status(201).json({

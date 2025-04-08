@@ -32,6 +32,10 @@ const ArticleSchema = new mongoose.Schema({
     enum: ['pending', 'approved', 'rejected'],
     default: 'pending'
   },
+  domain: {
+    type: String,
+    default: 'Uncategorized'
+  },
   techTags: [{
     type: String,
     required: [true, 'Please provide at least one tech tag']

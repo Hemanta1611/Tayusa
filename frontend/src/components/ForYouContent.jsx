@@ -31,36 +31,64 @@ function ForYouContent() {
         // Mock data for development
         setTimeout(() => {
           // Check if we have enough content to show
-          const mockVideos = [
+          const mockArticles = [
             {
-              _id: 'rec1',
-              title: 'Machine Learning for Beginners',
-              thumbnailUrl: 'https://i.ytimg.com/vi/_9WiB2PDO7k/maxresdefault.jpg',
-              user: { _id: 'user1', username: 'AIExpert', profilePicture: '' },
-              views: 12453,
-              createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
-              duration: 1420
+              _id: 'art1',
+              title: 'Understanding TypeScript Generics: A Comprehensive Guide',
+              thumbnailUrl: 'https://res.cloudinary.com/practicaldev/image/fetch/s--hoSwdTKG--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/gg0iazjgkm6hnmylm35u.png',
+              excerpt: 'Learn how to leverage TypeScript generics to write more reusable and type-safe code in your applications.',
+              user: { _id: 'user1', username: 'TSExpert', profilePicture: '' },
+              views: 8453,
+              createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+              readTime: '8 min read',
+              tags: ['TypeScript', 'JavaScript', 'Web Development']
             },
             {
-              _id: 'rec2',
-              title: 'React Performance Optimization Techniques',
-              thumbnailUrl: 'https://i.ytimg.com/vi/YQiHumF1kLo/maxresdefault.jpg',
-              user: { _id: 'user4', username: 'ReactGuru', profilePicture: '' },
-              views: 8765,
-              createdAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
-              duration: 843
+              _id: 'art2',
+              title: 'Building Microservices with Node.js and Docker',
+              thumbnailUrl: 'https://miro.medium.com/v2/resize:fit:1400/1*YTPRIwcSHTnQjUuoG_3RcA.jpeg',
+              excerpt: 'A step-by-step guide to designing, developing, and deploying microservices architecture using Node.js and Docker.',
+              user: { _id: 'user2', username: 'DevOpsNinja', profilePicture: '' },
+              views: 6789,
+              createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+              readTime: '12 min read',
+              tags: ['Microservices', 'Node.js', 'Docker', 'Backend']
+            },
+            {
+              _id: 'art3',
+              title: 'The Future of Web Development: WASM and Beyond',
+              thumbnailUrl: 'https://miro.medium.com/v2/resize:fit:1400/1*f_XlL5zJj0WPXEL88GI_ZA.jpeg',
+              excerpt: 'Exploring how WebAssembly is changing the landscape of web development and what\'s coming next.',
+              user: { _id: 'user3', username: 'WebFuturist', profilePicture: '' },
+              views: 12345,
+              createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+              readTime: '10 min read',
+              tags: ['WebAssembly', 'Web Development', 'Future Tech']
+            },
+            {
+              _id: 'art4',
+              title: 'Modern CSS Techniques for Responsive Layouts',
+              thumbnailUrl: 'https://miro.medium.com/v2/resize:fit:1400/1*KYoHpB5yUzF7yYaLj-nS8w.jpeg',
+              excerpt: 'Discover the latest CSS techniques for building beautiful, responsive layouts that work across all devices.',
+              user: { _id: 'user4', username: 'CSSMaster', profilePicture: '' },
+              views: 9876,
+              createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+              readTime: '7 min read',
+              tags: ['CSS', 'Responsive Design', 'Frontend']
             }
           ];
           
-          // Only show 2 items - simulating not having enough content in database
+          const mockVideos = []; // Clear videos
+          
+          // Only show tech-related articles in ForYouContent
           setRecommendedContent({
-            videos: mockVideos,
+            videos: mockVideos, 
             shorts: [],
-            articles: []
+            articles: mockArticles
           });
           
           // If we don't have enough content, fetch from YouTube
-          if (mockVideos.length < 4) {
+          if (mockArticles.length < 4) {
             fetchYouTubeContent();
             setUsingYoutubeFallback(true);
           }
@@ -84,47 +112,47 @@ function ForYouContent() {
         // const response = await axios.get('/api/content/youtube-recommendations');
         // setYoutubeContent(response.data);
         
-        // Mock YouTube data for development
+        // Mock YouTube data for development - Tech Articles and Videos
         setTimeout(() => {
           setYoutubeContent([
             {
               _id: 'yt1',
-              title: 'Advanced CSS Layouts in 2025',
-              thumbnailUrl: 'https://i.ytimg.com/vi/qm0IfG1GyZU/maxresdefault.jpg',
-              user: { _id: 'youtube', username: 'CSS Masters', profilePicture: '' },
-              views: 245670,
-              createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-              duration: 1056,
+              title: 'The Complete Guide to GraphQL in 2025',
+              thumbnailUrl: 'https://i.ytimg.com/vi/ZQL7tL2S0oQ/maxresdefault.jpg',
+              user: { _id: 'youtube', username: 'Web Simplified', profilePicture: '' },
+              views: 345670,
+              createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+              duration: 1956,
               isYouTube: true
             },
             {
               _id: 'yt2',
-              title: 'Building a Full-Stack AI App with Python and React',
-              thumbnailUrl: 'https://i.ytimg.com/vi/Uw45We0RvCs/maxresdefault.jpg',
-              user: { _id: 'youtube', username: 'AI DevShow', profilePicture: '' },
-              views: 187432,
-              createdAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
-              duration: 1843,
+              title: 'Machine Learning: Neural Networks Explained',
+              thumbnailUrl: 'https://i.ytimg.com/vi/bfmFfD2RIcg/maxresdefault.jpg',
+              user: { _id: 'youtube', username: 'AI Explained', profilePicture: '' },
+              views: 287432,
+              createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+              duration: 1347,
               isYouTube: true
             },
             {
               _id: 'yt3',
-              title: 'Modern JavaScript Techniques Every Developer Should Know',
-              thumbnailUrl: 'https://i.ytimg.com/vi/NCwa_xi0Uuc/maxresdefault.jpg',
-              user: { _id: 'youtube', username: 'JS Mastery', profilePicture: '' },
-              views: 321098,
-              createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-              duration: 947,
+              title: 'React vs Vue vs Angular in 2025: Which One to Choose?',
+              thumbnailUrl: 'https://i.ytimg.com/vi/T5EANujRWBc/maxresdefault.jpg',
+              user: { _id: 'youtube', username: 'JS Framework Reviews', profilePicture: '' },
+              views: 532198,
+              createdAt: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
+              duration: 1847,
               isYouTube: true
             },
             {
               _id: 'yt4',
-              title: 'Docker and Kubernetes Explained in 20 Minutes',
-              thumbnailUrl: 'https://i.ytimg.com/vi/2vMEQ5zS1y8/maxresdefault.jpg',
-              user: { _id: 'youtube', username: 'DevOps Simplified', profilePicture: '' },
+              title: 'Blockchain Development for Beginners',
+              thumbnailUrl: 'https://i.ytimg.com/vi/gyMwXuJrbJQ/maxresdefault.jpg',
+              user: { _id: 'youtube', username: 'Crypto Developer Hub', profilePicture: '' },
               views: 198745,
-              createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-              duration: 1230,
+              createdAt: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString(),
+              duration: 2430,
               isYouTube: true
             }
           ]);
@@ -161,13 +189,13 @@ function ForYouContent() {
 
   return (
     <div className="py-6">
-      {/* Recommended videos from our platform */}
-      {recommendedContent.videos.length > 0 && (
+      {/* Recommended articles from our platform */}
+      {recommendedContent.articles.length > 0 && (
         <div className="mb-10">
           <h2 className="text-xl font-bold mb-4">Recommended for You</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {recommendedContent.videos.map(video => (
-              <VideoCard key={video._id} video={video} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {recommendedContent.articles.map(article => (
+              <ArticleCard key={article._id} article={article} />
             ))}
           </div>
         </div>
@@ -180,18 +208,6 @@ function ForYouContent() {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {recommendedContent.shorts.map(short => (
               <ShortVideoCard key={short._id} video={short} />
-            ))}
-          </div>
-        </div>
-      )}
-      
-      {/* Articles */}
-      {recommendedContent.articles.length > 0 && (
-        <div className="mb-10">
-          <h2 className="text-xl font-bold mb-4">Articles Based on Your Interests</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recommendedContent.articles.map(article => (
-              <ArticleCard key={article._id} article={article} />
             ))}
           </div>
         </div>
@@ -216,9 +232,8 @@ function ForYouContent() {
       )}
       
       {/* No content message */}
-      {recommendedContent.videos.length === 0 && 
+      {recommendedContent.articles.length === 0 && 
        recommendedContent.shorts.length === 0 && 
-       recommendedContent.articles.length === 0 && 
        youtubeContent.length === 0 && (
         <div className="text-center py-10">
           <p className="text-gray-700 mb-4">

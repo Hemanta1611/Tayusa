@@ -201,224 +201,212 @@ function ShortVideoPage() {
   };
 
   return (
-    <div className="short-video-page bg-black min-h-screen">
-      {/* Second Header for For You / Following tabs */}
-      <div className="sticky top-0 z-50 bg-black">
-        <SecondHeader activeTab={activeTab} setActiveTab={setActiveTab} />
-      </div>
+    <div className="bg-black min-h-screen text-white">
+      <SecondHeader />
       
-      {activeTab === 'following' ? (
-        <div className="container mx-auto px-4 py-4 text-white">
-          <div className="rounded-lg p-4">
-            <FollowedCreators />
+      {loading ? (
+        <div className="flex justify-center items-center h-[calc(100vh-60px)]">
+          <LoadingSpinner />
+        </div>
+      ) : error ? (
+        <div className="p-4">
+          <div className="bg-red-900 border border-red-700 text-white px-4 py-3 rounded">
+            <p>{error}</p>
           </div>
         </div>
       ) : (
-        <div className="flex h-[calc(100vh-120px)]">
-          {loading ? (
-            <div className="flex justify-center items-center w-full py-20">
-              <LoadingSpinner />
-            </div>
-          ) : error ? (
-            <div className="text-center py-10 text-white w-full">
-              <p className="text-red-500">{error}</p>
-            </div>
-          ) : shorts.length === 0 ? (
-            <div className="text-center py-10 text-white w-full">
-              <p>No short videos found</p>
-            </div>
-          ) : (
-            <div className="relative flex-1 overflow-hidden">
-              <div className="absolute inset-0">
-                <video
-                  src={currentShort.videoUrl}
-                  className="h-full w-full object-cover"
-                  autoPlay
-                  loop
-                  controlsList="nodownload"
-                  playsInline
-                  muted
-                />
-                
-                {/* Gradient overlay for better text visibility */}
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black opacity-60"></div>
-              </div>
-              
-              {/* Navigation controls */}
-              <div className="absolute left-4 inset-y-0 flex items-center">
-                <button 
-                  onClick={handlePrevious}
-                  disabled={currentIndex === 0}
-                  className="w-10 h-10 rounded-full bg-black bg-opacity-50 flex items-center justify-center text-white disabled:opacity-30"
-                >
-                  <FaChevronUp size={20} />
-                </button>
-              </div>
-              
-              <div className="absolute right-4 inset-y-0 flex items-center">
-                <button 
-                  onClick={handleNext}
-                  disabled={currentIndex === shorts.length - 1}
-                  className="w-10 h-10 rounded-full bg-black bg-opacity-50 flex items-center justify-center text-white disabled:opacity-30"
-                >
-                  <FaChevronDown size={20} />
-                </button>
-              </div>
-              
-              {/* Content info */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 text-white z-10">
-                <div className="flex items-start mb-3">
-                  <div className="w-10 h-10 rounded-full overflow-hidden mr-3 bg-gray-800">
-                    {currentShort.user?.profilePicture ? (
-                      <img src={currentShort.user.profilePicture} alt={currentShort.user.username} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-primary text-white font-medium">
-                        {currentShort.user?.username?.charAt(0).toUpperCase() || 'U'}
+        <div className="flex h-[calc(100vh-60px)]">
+          {/* Main content area */}
+          <div className="flex-1 relative">
+            {currentShort && (
+              <div className="h-full">
+                {/* Short Video Player */}
+                <div className="relative h-full max-w-md mx-auto">
+                  <video
+                    src={currentShort.videoUrl}
+                    poster={currentShort.thumbnailUrl}
+                    className="h-full w-full object-cover"
+                    controls
+                    autoPlay
+                    loop
+                  />
+                  
+                  {/* Navigation controls */}
+                  <div className="absolute top-1/2 left-0 right-0 flex justify-between px-4 -translate-y-1/2 z-10">
+                    <button
+                      onClick={handlePrevious}
+                      disabled={currentIndex === 0}
+                      className="p-2 rounded-full bg-black bg-opacity-50 text-white disabled:opacity-50"
+                    >
+                      <FaChevronUp className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={handleNext}
+                      disabled={currentIndex === shorts.length - 1}
+                      className="p-2 rounded-full bg-black bg-opacity-50 text-white disabled:opacity-50"
+                    >
+                      <FaChevronDown className="w-5 h-5" />
+                    </button>
+                  </div>
+                  
+                  {/* Video controls on right side */}
+                  <div className="absolute right-3 bottom-24 flex flex-col items-center space-y-6">
+                    <button 
+                      className="flex flex-col items-center text-white"
+                      onClick={handleLike}
+                    >
+                      <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center mb-1 hover:bg-gray-700">
+                        {userInteractions.liked ? (
+                          <FaHeart className="w-5 h-5 text-red-500" />
+                        ) : (
+                          <FaRegHeart className="w-5 h-5" />
+                        )}
                       </div>
-                    )}
+                      <span className="text-xs">{currentShort.likes.length}</span>
+                    </button>
+                    <button 
+                      className="flex flex-col items-center text-white"
+                      onClick={() => setShowComments(!showComments)}
+                    >
+                      <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center mb-1 hover:bg-gray-700">
+                        <FaComment className="w-5 h-5" />
+                      </div>
+                      <span className="text-xs">{currentShort.comments?.length || 0}</span>
+                    </button>
+                    <button 
+                      className="flex flex-col items-center text-white"
+                      onClick={handleShare}
+                    >
+                      <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center mb-1 hover:bg-gray-700">
+                        <FaShare className="w-5 h-5" />
+                      </div>
+                      <span className="text-xs">Share</span>
+                    </button>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-lg mb-1">{currentShort.user?.username || 'Anonymous'}</h3>
-                    <p className="text-sm text-gray-300 mb-2">{currentShort.title}</p>
-                    <p className="text-xs text-gray-400">{currentShort.description}</p>
-                  </div>
-                </div>
-                
-                {/* Tags */}
-                {currentShort.techTags && currentShort.techTags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {currentShort.techTags.map((tag, index) => (
-                      <span 
-                        key={index} 
-                        className="px-2 py-1 bg-gray-800 text-gray-200 rounded-full text-xs"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-              
-              {/* Interaction buttons */}
-              <div className="absolute right-4 bottom-20 flex flex-col items-center space-y-6">
-                <button 
-                  onClick={handleLike}
-                  className="flex flex-col items-center text-white"
-                >
-                  {userInteractions.liked ? (
-                    <FaHeart size={30} className="text-red-500 mb-1" />
-                  ) : (
-                    <FaRegHeart size={30} className="mb-1" />
-                  )}
-                  <span className="text-xs">{(currentShort.likes?.length || 0) + (userInteractions.liked ? 1 : 0)}</span>
-                </button>
-                
-                <button 
-                  onClick={() => setShowComments(!showComments)}
-                  className="flex flex-col items-center text-white"
-                >
-                  <FaComment size={30} className="mb-1" />
-                  <span className="text-xs">{currentShort.comments?.length || 0}</span>
-                </button>
-                
-                <button 
-                  onClick={handleShare}
-                  className="flex flex-col items-center text-white"
-                >
-                  <FaShare size={30} className="mb-1" />
-                  <span className="text-xs">Share</span>
-                </button>
-              </div>
-              
-              {/* Comments section */}
-              {showComments && (
-                <div className="absolute inset-0 bg-black bg-opacity-90 z-20 overflow-y-auto">
-                  <div className="p-4">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-white text-lg font-bold">Comments ({currentShort.comments?.length || 0})</h3>
-                      <button 
-                        onClick={() => setShowComments(false)}
-                        className="text-white p-2"
-                      >
-                        &times;
+                  
+                  {/* Video info at bottom */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black to-transparent">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="w-10 h-10 rounded-full bg-gray-800 overflow-hidden flex-shrink-0">
+                        {currentShort.user.profilePicture ? (
+                          <img 
+                            src={currentShort.user.profilePicture} 
+                            alt={currentShort.user.username} 
+                            className="w-full h-full object-cover" 
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gray-700 text-white">
+                            {currentShort.user.username.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-white">
+                        <p className="text-sm font-semibold">@{currentShort.user.username}</p>
+                        <p className="text-xs text-gray-300">{currentShort.techTags?.join(', ')}</p>
+                      </div>
+                      <button className="ml-auto bg-white text-black text-sm font-medium px-4 py-1.5 rounded-full">
+                        Subscribe
                       </button>
                     </div>
-                    
-                    {isAuthenticated && (
-                      <form onSubmit={handleCommentSubmit} className="mb-6">
-                        <div className="flex">
-                          <div className="mr-3">
-                            <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-800">
-                              {user?.profilePicture ? (
-                                <img src={user.profilePicture} alt={user.username} className="w-full h-full object-cover" />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-primary text-white text-xs font-medium">
-                                  {user?.username?.charAt(0).toUpperCase() || 'U'}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex-1">
-                            <input
-                              type="text"
-                              value={comment}
-                              onChange={(e) => setComment(e.target.value)}
-                              placeholder="Add a comment..."
-                              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-full focus:outline-none focus:ring-1 focus:ring-primary"
-                            />
-                          </div>
-                          <button
-                            type="submit"
-                            disabled={!comment.trim()}
-                            className="ml-2 px-3 py-1 bg-primary text-white rounded-full disabled:opacity-50"
-                          >
-                            Post
-                          </button>
-                        </div>
-                      </form>
-                    )}
-                    
-                    {/* Comments list */}
-                    <div className="space-y-4">
-                      {currentShort.comments && currentShort.comments.length > 0 ? (
-                        currentShort.comments.map(comment => (
-                          <div key={comment._id} className="flex text-white">
-                            <div className="mr-3">
-                              <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-800">
-                                {comment.user?.profilePicture ? (
-                                  <img src={comment.user.profilePicture} alt={comment.user.username} className="w-full h-full object-cover" />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center bg-primary text-white text-xs font-medium">
-                                    {comment.user?.username?.charAt(0).toUpperCase() || 'U'}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                            <div className="flex-1">
-                              <div className="flex items-center mb-1">
-                                <span className="font-medium mr-2">{comment.user?.username || 'Anonymous'}</span>
-                                <span className="text-xs text-gray-400">
-                                  {new Date(comment.createdAt).toLocaleDateString()}
-                                </span>
-                              </div>
-                              <p className="text-gray-200">{comment.content}</p>
-                              <div className="mt-1 flex items-center text-xs text-gray-400">
-                                <button className="flex items-center mr-4 hover:text-white">
-                                  <FaRegHeart className="mr-1" />
-                                  <span>{comment.likes?.length || 0}</span>
-                                </button>
-                                <button className="hover:text-white">Reply</button>
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <p className="text-center text-gray-400 py-4">No comments yet. Be the first to comment!</p>
-                      )}
-                    </div>
+                    <h3 className="text-white text-sm mb-1">{currentShort.title}</h3>
+                    <p className="text-gray-300 text-xs">{currentShort.description}</p>
                   </div>
                 </div>
-              )}
+              </div>
+            )}
+          </div>
+          
+          {/* Comments panel */}
+          {showComments && currentShort && (
+            <div className="w-full md:w-96 bg-gray-900 h-full overflow-y-auto border-l border-gray-800 absolute right-0 top-0 bottom-0 z-20">
+              <div className="p-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">Comments ({currentShort.comments?.length || 0})</h3>
+                  <button 
+                    className="p-2 rounded-full hover:bg-gray-800"
+                    onClick={() => setShowComments(false)}
+                  >
+                    <span className="sr-only">Close comments</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+                
+                {/* Add comment form */}
+                {isAuthenticated && (
+                  <form onSubmit={handleCommentSubmit} className="mb-6">
+                    <div className="flex items-center">
+                      <div className="mr-3">
+                        <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-800">
+                          {user?.profilePicture ? (
+                            <img src={user.profilePicture} alt={user.username} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-primary text-white text-xs font-medium">
+                              {user?.username?.charAt(0).toUpperCase() || 'U'}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <input
+                          type="text"
+                          value={comment}
+                          onChange={(e) => setComment(e.target.value)}
+                          placeholder="Add a comment..."
+                          className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-full focus:outline-none focus:ring-1 focus:ring-primary"
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={!comment.trim()}
+                        className="ml-2 px-3 py-1 bg-primary text-white rounded-full disabled:opacity-50"
+                      >
+                        Post
+                      </button>
+                    </div>
+                  </form>
+                )}
+                
+                {/* Comments list */}
+                <div className="space-y-4">
+                  {currentShort.comments && currentShort.comments.length > 0 ? (
+                    currentShort.comments.map(comment => (
+                      <div key={comment._id} className="flex text-white">
+                        <div className="mr-3">
+                          <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-800">
+                            {comment.user?.profilePicture ? (
+                              <img src={comment.user.profilePicture} alt={comment.user.username} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-primary text-white text-xs font-medium">
+                                {comment.user?.username?.charAt(0).toUpperCase() || 'U'}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center mb-1">
+                            <span className="font-medium mr-2">{comment.user?.username || 'Anonymous'}</span>
+                            <span className="text-xs text-gray-400">
+                              {new Date(comment.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <p className="text-gray-200">{comment.content}</p>
+                          <div className="mt-1 flex items-center text-xs text-gray-400">
+                            <button className="flex items-center mr-4 hover:text-white">
+                              <FaRegHeart className="mr-1" />
+                              <span>{comment.likes?.length || 0}</span>
+                            </button>
+                            <button className="hover:text-white">Reply</button>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-center text-gray-400 py-4">No comments yet. Be the first to comment!</p>
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </div>
